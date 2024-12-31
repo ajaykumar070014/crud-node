@@ -1,64 +1,63 @@
-import { Student } from "../models/student.js";
+import {Student} from "../models/student.js";
 
 export class StudentRepository {
-  constructor() {
-    this.model = Student;
-  }
-
-  async create(studentData) {
-    try {
-      const student = await this.model.create(studentData);
-      return student;
-    } catch (error) {
-      throw new Error(`${error.message}`);
+    constructor() {
+        this.model = Student;
     }
-  }
 
-  async findAll() {
-    try {
-      const students = await this.model.findAll();
-      return students;
-    } catch (error) {
-      throw new Error(`${error.message}`);
-    }
-  }
+    create = async (studentData) => {
+        try {
+            const student = await this.model.create(studentData);
+            return student;
+        } catch (error) {
+            throw new Error(`Failed to create student: ${error.message}`);
+        }
+    };
 
-  async findById(studentId) {
-    try {
-      const student = await this.model.findByPk(studentId);
-      if (!student) {
-        throw new Error(`${studentId} not found`);
-      }
-      return student;
-    } catch (error) {
-      throw new Error(`${error.message}`);
-    }
-  }
+    findAll = async () => {
+        try {
+            const students = await this.model.findAll();
+            return students;
+        } catch (error) {
+            throw new Error(`Failed to fetch students: ${error.message}`);
+        }
+    };
 
-  async update(studentId, updateData) {
-    try {
-      const student = await this.model.findByPk(studentId);
-      if (!student) {
-        throw new Error(`${studentId} not found`);
-      }
+    findById = async (studentId) => {
+        try {
+            const student = await this.model.findByPk(studentId);
+            if (!student) {
+                throw new Error(`Student with ID ${studentId} not found`);
+            }
+            return student;
+        } catch (error) {
+            throw new Error(`Failed to find student by ID: ${error.message}`);
+        }
+    };
 
-      await this.model.update(updateData, { where: { studentId } });
+    update = async (studentId, updateData) => {
+        try {
+            const student = await this.model.findByPk(studentId);
+            if (!student) {
+                throw new Error(`Student with ID ${studentId} not found`);
+            }
 
-      return this.model.findByPk(studentId);
-    } catch (error) {
-      throw new Error(`${error.message}`);
-    }
-  }
+            await this.model.update(updateData, {where: {studentId}});
 
-  async delete(studentId) {
-    try {
-      const deleted = await this.model.destroy({ where: { studentId } });
-      if (deleted) {
-        return;
-      }
-      throw new Error(`${studentId} not found`);
-    } catch (error) {
-      throw new Error(`${error.message}`);
-    }
-  }
+            return this.model.findByPk(studentId);
+        } catch (error) {
+            throw new Error(`Failed to update student: ${error.message}`);
+        }
+    };
+
+    delete = async (studentId) => {
+        try {
+            const deleted = await this.model.destroy({where: {studentId}});
+            if (!deleted) {
+                throw new Error(`Student with ID ${studentId} not found`);
+            }
+        } catch (error) {
+            throw new Error(`Failed to delete student: ${error.message}`);
+        }
+    };
 }
